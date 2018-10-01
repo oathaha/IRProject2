@@ -10,7 +10,7 @@ public class Document implements Comparable
 {
 	private Integer id = -1;	//document/query ID
 	private String rawText = null;	//raw text from the file
-	private List<String> tokens = null;	//tokens after preprocessing raw text
+	private List<String> tokens = null;	//tokens after preprocessing raw text 
 	public int getId() {
 		return id;
 	}
