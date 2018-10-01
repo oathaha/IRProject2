@@ -25,7 +25,7 @@ public class JaccardSearcher extends Searcher{
 		 *  	find score from formula 
 		 *  	store score and document in SearchResult object then put in resultlist 
 		 */
-			      
+			      //test
 		return null;
 		/***********************************************/
 	}
