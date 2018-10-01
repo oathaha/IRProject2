@@ -1,6 +1,6 @@
-//Name: 
-//Section: 
-//ID: 
+//Name: Thanadon Bunkeard
+//Section: 1
+//ID: 5988073
 
 import java.util.List;
 
@@ -16,6 +16,7 @@ public class TFIDFSearcher extends Searcher
 	@Override
 	public List<SearchResult> search(String queryString, int k) {
 		/************* YOUR CODE HERE ******************/
+		
 		return null;
 		/***********************************************/
 	}
