@@ -17,7 +17,7 @@ public class JaccardSearcher extends Searcher{
 	public List<SearchResult> search(String queryString, int k) {
 		/************* YOUR CODE HERE ******************/
 		/*
-		 *  create term set of queryString T(q)
+		 *  create term set of queryString T(q)  --> List<String> tokenstr = Search.tokenize(queryString);
 		 *  create list of SearchReslt object (resultlist) --> List<SearchResult> name  new ...
 		 *  for each document
 		 *  	create term set of document T(d)
