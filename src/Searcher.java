@@ -60,7 +60,6 @@ public abstract class Searcher {
 		}
 				
 		System.out.println("@@@ Finished loading "+documents.size()+" documents from "+filename);
-				
 		return documents;
 	}
 	
