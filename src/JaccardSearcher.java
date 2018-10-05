@@ -16,6 +16,7 @@ public class JaccardSearcher extends Searcher{
 	@Override
 	public List<SearchResult> search(String queryString, int k) {
 		/************* YOUR CODE HERE ******************/
+		
 		return null;
 		/***********************************************/
 	}
