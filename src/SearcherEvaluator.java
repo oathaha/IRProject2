@@ -72,7 +72,22 @@ public class SearcherEvaluator {
 	public double[] getQueryPRF(Document query, Searcher searcher, int k)
 	{
 		/*********************** YOUR CODE HERE *************************/
-		return null;
+		double prf[] = new double[3];
+		List<SearchResult> result = searcher.search(query.getRawText(), k);
+		Set<Integer> ground_truth = answers.get(query.getId());
+		Set<Integer> retrieve = new HashSet<Integer>();
+		
+		for(SearchResult sr: result)
+			retrieve.add(sr.getDocument().getId());
+		
+		Set<Integer> intersect = new HashSet<Integer>(retrieve);
+		intersect.retainAll(ground_truth);
+		
+		prf[0] = intersect.size()/(double)retrieve.size();
+		prf[1] = intersect.size()/(double)ground_truth.size();
+		prf[2] = (2*prf[0]*prf[1])/(prf[0]+prf[1]);
+		
+		return prf;
 		/****************************************************************/
 	}
 	
@@ -86,7 +101,24 @@ public class SearcherEvaluator {
 	public double[] getAveragePRF(Searcher searcher, int k)
 	{
 		/*********************** YOUR CODE HERE *************************/
-		return null;
+		double avgprf[] = new double[3];
+		double tmp[];
+		int size = queries.size();
+		//double pr,rec,f1;
+		
+		for(Document doc: queries)
+		{
+			tmp = getQueryPRF(doc, searcher, k);
+			avgprf[0] += tmp[0];
+			avgprf[1] += tmp[1];
+			avgprf[2] += tmp[2];
+		}
+		
+		avgprf[0]/=(double)size;
+		avgprf[1]/=(double)size;
+		avgprf[2]/=(double)size;
+		
+		return avgprf;
 		/****************************************************************/
 	}
 }
