@@ -44,12 +44,12 @@ public class JaccardSearcher extends Searcher{
 				Set<String> intersect = new HashSet<String>(queryset);
 				Set<String> union = new HashSet<String>(queryset);
 				intersect.retainAll(wordset.get(p));
-				//System.out.println("intersect: " + intersect);
+				System.out.println("intersect: " + intersect);
 				
 				union.addAll(wordset.get(p));
 				System.out.println("union: " + union+"\n");
 				
-				
+				//K
 			}
 		return null;
 		/***********************************************/
