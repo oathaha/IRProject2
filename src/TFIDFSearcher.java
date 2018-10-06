@@ -4,163 +4,164 @@
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
 
 
 public class TFIDFSearcher extends Searcher
 {	
-	HashMap<String, Double> TFmap = new HashMap<>(); // for 1  document
 	HashMap<String, Double> IDFmap = new HashMap<>();
-	HashMap<String, Double> TFIDFmap = new HashMap<>();
-	HashMap<String, Double> testmap = new HashMap<>();
+	HashMap<Document,Integer> docmap = new HashMap<>();
+	HashMap<String,Integer> wordbag = new HashMap<>(); // map term and term id
+	HashMap<Integer,double[]> vecmap = new HashMap<>();
 	
-
-	HashMap<String, Double> QTFmap = new HashMap<>();
-	HashMap<String, Double> QTFIDFmap = new HashMap<>();
-	
-	HashMap<Document,HashMap<String, Double> > doctfidf = new HashMap<Document,HashMap<String, Double> >();
-	HashSet<String> wordbag = new HashSet<String>();
-	
+	 Comparator<SearchResult> docIDComparator = new Comparator<SearchResult>() {
+		@Override
+		public int compare(SearchResult r1,
+				SearchResult r2)
+		{
+			// TODO Auto-generated method stub
+			return r1.getDocument().getId()-r2.getDocument().getId();
+		}
+     };
+     
 	public TFIDFSearcher(String docFilename) {
 		super(docFilename);
 		
 		/************* YOUR CODE HERE ******************/
 		double tfidf,tf;
-		for(Document i: super.documents) {
-			wordbag.addAll(i.getTokens());
-		}
-		//System.out.println(wordbag);
-		
-		// Find idf
+		int tid = 0;
+		int docid = 0;
 		double count;
 		double size = super.documents.size();
-		for(String word: wordbag) {
-			count = 0.0;
-			for(Document i: super.documents) {
-				if(i.getTokens().contains(word)) {
-					++count;
-				}
-				
-			}
-			count = Math.log10( 1 + (size/count) );
-			IDFmap.put(word, count);
-			TFmap.put(word,0.0);
-			TFIDFmap.put(word, 0.0);
-			
-		}
-	
 		
-		/*for(int docid: doctfidf.keySet())
+		List<String> tok;
+		Set<String> tokset;
+		
+		// create term dict and doc dict
+		for(Document i: super.documents) 
 		{
-			for(String term: doctfidf.get(docid).keySet())
+			if(!docmap.containsKey(i))
 			{
-				System.out.println("doc id: " + docid + " term: " + term +" idf: " + doctfidf.get(term));
+				docmap.put(i, docid);
+				docid++;
 			}
-		}*/
-		/*for(Map.Entry<String, Double> entry: TFmap.entrySet()) {
-			System.out.println("Key: "+entry.getKey()+", Freq: "+entry.getValue());//+", Size:"+super.documents.get(0).getTokens().size());
-		}*/
-		//System.out.println(TFmap.get("council"));
+			tok = i.getTokens();
+			for(String str: tok)
+			{
+				if(!wordbag.containsKey(str))
+				{
+					wordbag.put(str, tid);
+					tid++;
+				}
+			}
+		}
+
+		// Find idf
+		for(Document doc: documents)
+		{
+			tokset = new HashSet<>(doc.getTokens());
+			for(String word: tokset)
+			{
+				if(!IDFmap.containsKey(word))
+				{
+					IDFmap.put(word, 1.0);
+				}
+				else
+					IDFmap.replace(word, IDFmap.get(word)+1);
+			}
+		}
+		for(String word: IDFmap.keySet())
+			IDFmap.replace(word, Math.log10(1+ (size/IDFmap.get(word))));
 		
-		
-		
+		//find tf-idf
+		for(Document doc: documents)
+		{
+			double vec[] = new double[wordbag.size()];
+			tok = doc.getTokens();
+			for(String word: tok)
+			{
+				tf = Collections.frequency(tok, word);
+				//System.out.println(word + " " + tf);
+				
+				if(tf > 0)
+					tf = 1 + Math.log10(tf);
+				
+				tfidf = IDFmap.get(word) * tf;
+				vec[wordbag.get(word)] = tfidf;
+			}
+			vecmap.put(docmap.get(doc), vec);
+		}
 		/***********************************************/
 	}
 	
-	// not work here T-T
-	// error: heap space error
-	public HashMap<String,Double> clonemap(Map<String,Double> map)
-	{
-		HashMap<String,Double> clone = new HashMap<String,Double>();
-		clone.putAll(map);
-		return clone;
-	}
 	@Override
 	public List<SearchResult> search(String queryString, int k) {
 		/************* YOUR CODE HERE ******************/
 		List<String> arr = super.tokenize(queryString);
 		List<SearchResult> result  = new LinkedList<SearchResult>();
+		List<SearchResult> nanresult = new LinkedList<SearchResult>();
+		PriorityQueue<SearchResult> resultqueue = new PriorityQueue<SearchResult>(docIDComparator);
 		SearchResult cos;
-		double count = 0.0;
-		double tf = 0, tfidf;
+		double tf = 0;
 		double score = 0.0;
-		double normd = 0.0, normq = 0.0, qd = 0.0, d;
-		double newFreq;
-		/*
-		 * wordbag = union all token in all document and arr
-		 * for each document
-		 * 		for each token
-		 * 			find tf, idf
-		 * 			tfidf = tf*idf
-		 * 		find cos similarity
-		 */
-		
-		// initialize query vector
-		
-		for(String word: wordbag)
-		{
-			QTFmap.put(word, 0.0);
-			QTFIDFmap.put(word, 0.0);
-		}
-		
-		// TF of each document
-		for(Document i: super.documents) {
-			newFreq= 0.0;
-			//System.out.println(i.getTokens().toString());
-			for(String j: i.getTokens()) { // change something...
-				newFreq = Collections.frequency(i.getTokens(), j);
-				//System.out.println("Word: "+",Freq: "+newFreq);
-				//if(i.getId() == 1)
-				//{
-				//	System.out.println("word: " + j + ", tf: " + newFreq + " idf: " + IDFmap.get(j));
-				//}
-				//System.out.println("String: "+j+", Freq: "+newFreq);
-				if(newFreq > 0.0) {
-					//TFmap.put(j, 1+Math.log10(newFreq));
-					tf = 1+Math.log10(newFreq);
-					//TFmap.put(j, tf);
-				}
-				else {
-					TFmap.put(j, 0.0);
-				}
-				tfidf = tf*IDFmap.get(j);
-				TFIDFmap.put(j, tfidf);
-				//System.out.println("Doc id: " + i.getId()+"term: " + j+", TF: " + TFmap.get(j) + " IDF: " + IDFmap.get(j));
-			}
-			
-			for(String word: arr) {
-				count = Collections.frequency(arr, i);
-				if(count > 0.0)
-				{
-					// find tf*idf
-					tf = 1 + Math.log10(count);
-					QTFmap.put(word, tf);
-				}
-				tfidf = QTFmap.get(word)*IDFmap.get(word);
-				QTFIDFmap.put(word, tfidf);
-			}
-			
-			for(String t: QTFIDFmap.keySet())
-			{
-				normq += Math.pow(QTFIDFmap.get(t), 2);
-			}
-			// |q|
-			normq = Math.sqrt(normq);
-			
-			normd = Math.sqrt(normd);
-			score = qd/(normq*normd);
-			cos = new SearchResult(i, score);
-			result.add(cos);
-			// |d|
-			//System.out.println(doctfidf.size());
-		}
+		double normd, normq , qd;
+		double freq;
+		double q[],d[];
+		int docid,i;
 
-		Collections.sort(result);		
-		return result.subList(0, k);
+		// initialize query vector
+		for(Document doc: docmap.keySet())
+		{
+			normd = 0;
+			normq = 0;
+			qd = 0;
+			docid = docmap.get(doc);
+			d = vecmap.get(docid);
+			q = new double[wordbag.size()];
+			
+			for(String str: arr)
+			{
+				if(wordbag.get(str) != null) // word in query is in wordbag
+				{
+					freq = Collections.frequency(arr, str);
+					tf = 1 + Math.log10(freq);
+					q[wordbag.get(str)] = tf*IDFmap.get(str);
+				}
+			}
+			for(i=0; i<d.length; i++)
+			{
+				qd += d[i]*q[i];
+				normd += Math.pow(d[i], 2);
+				normq += Math.pow(q[i], 2);
+			}
+			normd = Math.sqrt(normd);
+			normq = Math.sqrt(normq);
+			score = qd/(normd*normq);
+			cos = new SearchResult(doc, score);
+			if(Double.isNaN(score))
+				resultqueue.add(cos);
+			else
+				result.add(cos);
+		}
+		
+		if(result.size() > 0) // at least k result in the list
+		{
+			Collections.sort(result);		
+			return result.subList(0, k);
+		}
+		else // nan result
+		{
+			for(i=0; i<k; i++)
+				nanresult.add(resultqueue.poll());
+			return nanresult.subList(0, k);
+		}
 		/***********************************************/
 	}
 }

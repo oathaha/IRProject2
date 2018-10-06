@@ -1,6 +1,6 @@
-//Name: Thanadon Bunkerd
+//Name: Chanathip Pornprasit
 //Section: 1
-//ID: 5988073
+//ID: 5988179
 
 import java.io.File;
 import java.io.IOException;
@@ -83,9 +83,18 @@ public class SearcherEvaluator {
 		Set<Integer> intersect = new HashSet<Integer>(retrieve);
 		intersect.retainAll(ground_truth);
 		
-		prf[0] = intersect.size()/(double)retrieve.size();
-		prf[1] = intersect.size()/(double)ground_truth.size();
-		prf[2] = (2*prf[0]*prf[1])/(prf[0]+prf[1]);
+		if(retrieve.size() > 0)
+			prf[0] = intersect.size()/(double)retrieve.size();		//precision
+
+		
+		if(ground_truth.size() > 0)
+			prf[1] = intersect.size()/(double)ground_truth.size();	//recall
+		
+		if(prf[0] > 0 && prf[1] > 0)
+		{
+			prf[2] = (2*prf[0]*prf[1])/(prf[0]+prf[1]);
+		}	
+		
 		
 		return prf;
 		/****************************************************************/
