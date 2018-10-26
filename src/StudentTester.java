@@ -107,18 +107,34 @@ public class StudentTester {
 	public static void testYourSearcher(String corpus)
 	{
 		//YOUR CODE HERE (BONUS)
+		System.out.println("@@@ Testing RSV searcher on "+corpus);
+		String documentFilename = corpus+"/documents.txt";
+		long startTime = System.currentTimeMillis();
+		//initialize search engine
+		Searcher searcher = new RSVSearcher(documentFilename);
+		for(String query: testQueries)
+		{
+			List<SearchResult> results = searcher.search(query, k);
+			System.out.println("@@@ Results: "+(query.length() > 50? query.substring(0, 50)+"...":query));
+			Searcher.displaySearchResults(results);
+			System.out.println();
+		}
+		
+		long endTime = System.currentTimeMillis();
+		System.out.println("@@@ Total time used: "+(endTime-startTime)+" milliseconds.");
+		
 	}
 	
 	public static void main(String[] args)
 	{	
 		/********************* Uncomment test cases you want to test ***************/
-		testJaccardSearcher(testCorpus);
+		//testJaccardSearcher(testCorpus);
 		//testTFIDFSearcher(testCorpus);
 		//testCompareTwoSearchersOnSomeQueries(testCorpus);
 		//testCompareTwoSearchersOnAllQueries(testCorpus);
 		
 		//********** BONUS **************//
-		//testYourSearcher(testCorpus);
+		testYourSearcher(testCorpus);
 		//*******************************//
 	}
 
