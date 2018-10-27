@@ -1,3 +1,7 @@
+//Name: Komson Najard, Thanadon Bunkeard, Chanathip Pornprasit
+//Section: 1 (all)
+//ID: 5988020, 5988073, 5988179
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -68,6 +72,7 @@ public class StudentTester {
 		SearcherEvaluator eval = new SearcherEvaluator(testCorpus);
 		Searcher jSearcher = new JaccardSearcher(testCorpus+"/documents.txt");
 		Searcher tSearcher = new TFIDFSearcher(testCorpus+"/documents.txt");
+		Searcher coolSearcher = new MyCoolSearcher(testCorpus+"/documents.txt");
 		
 		int[] qIndexes = new int[3];
 		qIndexes[0] = 0;
@@ -79,8 +84,10 @@ public class StudentTester {
 			System.out.println("@@@ Query: "+eval.getQueries().get(qIndex));
 			double[] jResults = eval.getQueryPRF(eval.getQueries().get(qIndex), jSearcher, k);
 			double[] tResults = eval.getQueryPRF(eval.getQueries().get(qIndex), tSearcher, k);
+			double[] coolResults = eval.getQueryPRF(eval.getQueries().get(qIndex),coolSearcher,k);
 			System.out.println("\tJaccard (P,R,F): "+Arrays.toString(jResults));
 			System.out.println("\tTFIDF (P,R,F): "+Arrays.toString(tResults));
+			System.out.println("\tRSV (P,R,F): " + Arrays.toString(coolResults));
 		}
 		
 		long endTime = System.currentTimeMillis();
@@ -95,23 +102,56 @@ public class StudentTester {
 		SearcherEvaluator s = new SearcherEvaluator(corpus);
 		Searcher jSearcher = new JaccardSearcher(testCorpus+"/documents.txt");
 		Searcher tSearcher = new TFIDFSearcher(testCorpus+"/documents.txt");
+		Searcher coolSearcher = new MyCoolSearcher(testCorpus+"/documents.txt");
 		
+		double[] coolResults = s.getAveragePRF(coolSearcher, k);
 		double[] jResults = s.getAveragePRF(jSearcher, k);
 		double[] tResults = s.getAveragePRF(tSearcher, k);
+		
 		System.out.println("@@@ Jaccard: "+Arrays.toString(jResults));
 		System.out.println("@@@ TFIDF: "+Arrays.toString(tResults));
+		System.out.println("@@@ RSV: " + Arrays.toString(coolResults));
+		
 		long endTime = System.currentTimeMillis();
 		System.out.println("@@@ Total time used: "+(endTime-startTime)+" milliseconds.");
 	}
 	
+	public static void question2(String corpus)
+	{
+		int r;
+		//long start,end;
+		StringBuilder jac = new StringBuilder();
+		StringBuilder tfidf = new StringBuilder();
+		SearcherEvaluator s = new SearcherEvaluator(corpus);
+		Searcher jSearcher = new JaccardSearcher(testCorpus+"/documents.txt");
+		Searcher tSearcher = new TFIDFSearcher(testCorpus+"/documents.txt");
+		jac.append("k,avgPR,avgREC,avgF1\n");
+		tfidf.append("k,avgPR,avgREC,avgF1\n");
+		for(r=1; r<=50; r++)
+		{
+			//start = System.currentTimeMillis();
+			//double[] avgboth = new double[3];
+			double[] jres = s.getAveragePRF(jSearcher, r);
+			double[] tres = s.getAveragePRF(tSearcher, r);
+			jac.append(r+","+jres[0]+","+jres[1]+","+jres[2]+"\n");
+			tfidf.append(r+","+tres[0]+","+tres[1]+","+tres[2]+"\n");
+//			avgboth[0] = (jres[0]+tres[0])/2.0;
+//			avgboth[1] = (jres[1]+tres[1])/2.0;
+//			avgboth[2] = (jres[2]+tres[2])/2.0;
+			
+			//end = System.currentTimeMillis();
+			//System.out.println(r+","+Arrays.toString(avgboth));
+		}
+		System.out.println(jac.toString()+"\n"+tfidf.toString());
+	}
+	
 	public static void testYourSearcher(String corpus)
 	{
-		//YOUR CODE HERE (BONUS)
 		System.out.println("@@@ Testing RSV searcher on "+corpus);
 		String documentFilename = corpus+"/documents.txt";
 		long startTime = System.currentTimeMillis();
 		//initialize search engine
-		Searcher searcher = new RSVSearcher(documentFilename);
+		Searcher searcher = new MyCoolSearcher(documentFilename);
 		for(String query: testQueries)
 		{
 			List<SearchResult> results = searcher.search(query, k);
@@ -122,7 +162,6 @@ public class StudentTester {
 		
 		long endTime = System.currentTimeMillis();
 		System.out.println("@@@ Total time used: "+(endTime-startTime)+" milliseconds.");
-		
 	}
 	
 	public static void main(String[] args)
@@ -131,10 +170,10 @@ public class StudentTester {
 		//testJaccardSearcher(testCorpus);
 		//testTFIDFSearcher(testCorpus);
 		//testCompareTwoSearchersOnSomeQueries(testCorpus);
-		//testCompareTwoSearchersOnAllQueries(testCorpus);
-		
+		testCompareTwoSearchersOnAllQueries(testCorpus); // average pr,rec,f1
+		//question2(testCorpus);
 		//********** BONUS **************//
-		testYourSearcher(testCorpus);
+		//testYourSearcher(testCorpus);
 		//*******************************//
 	}
 

@@ -1,6 +1,6 @@
-//Name: Chanathip Pornprasit
-//Section: 1
-//ID: 5988179
+//Name: Komson Najard, Thanadon Bunkeard, Chanathip Pornprasit
+//Section: 1 (all)
+//ID: 5988020, 5988073, 5988179
 
 import java.io.File;
 import java.io.IOException;

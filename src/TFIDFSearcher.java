@@ -1,6 +1,6 @@
-//Name: Thanadon Bunkeard
-//Section: 1
-//ID: 5988073
+//Name: Komson Najard, Thanadon Bunkeard, Chanathip Pornprasit
+//Section: 1 (all)
+//ID: 5988020, 5988073, 5988179
 
 import java.util.Collection;
 import java.util.Collections;
@@ -74,11 +74,11 @@ public class TFIDFSearcher extends Searcher
 					IDFmap.put(word, 1.0);
 				}
 				else
-					IDFmap.replace(word, IDFmap.get(word)+1);
+					IDFmap.replace(word, IDFmap.get(word)+1.0);
 			}
 		}
 		for(String word: IDFmap.keySet())
-			IDFmap.replace(word, Math.log10(1+ (size/IDFmap.get(word))));
+			IDFmap.replace(word, Math.log10(1.0+ (size/IDFmap.get(word))));
 		
 		//find tf-idf
 		for(Document doc: documents)
@@ -115,7 +115,15 @@ public class TFIDFSearcher extends Searcher
 		double freq;
 		double q[],d[];
 		int docid,i;
-
+		/*
+		 * wordbag = union all token in all document and arr
+		 * for each document
+		 * 		for each token
+		 * 			find tf, idf
+		 * 			tfidf = tf*idf
+		 * 		find cos similarity
+		 */
+		
 		// initialize query vector
 		for(Document doc: docmap.keySet())
 		{

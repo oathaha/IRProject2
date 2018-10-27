@@ -1,6 +1,6 @@
-//Name: Komson Najard
-//Section: 1
-//ID: 5988020
+//Name: Komson Najard, Thanadon Bunkeard, Chanathip Pornprasit
+//Section: 1 (all)
+//ID: 5988020, 5988073, 5988179
 
 import java.util.Collections;
 import java.util.HashSet;
