@@ -1,10 +1,15 @@
-import org.w3c.dom.Document;
+import java.util.HashMap;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.LinkedList;
+import java.util.Collections;
 
 public class RSVSearcher extends Searcher{
 
     HashMap<String, Double> IDFmap = new HashMap<>();
-	HashMap<Document,Integer> docmap = new HashMap<>();
-	HashMap<String,Integer> wordbag = new HashMap<>(); // map term and term id
+		HashMap<Document,Integer> docmap = new HashMap<>();
+		HashMap<String,Integer> wordbag = new HashMap<>(); // map term and term id
     HashMap<Integer,double[]> vecmap = new HashMap<>();
     Comparator<SearchResult> docIDComparator = new Comparator<SearchResult>() {
 		@Override
@@ -23,7 +28,7 @@ public class RSVSearcher extends Searcher{
 		double count;
 		double size = super.documents.size();
         // create term dict and doc dict
-		for(Document i: super.documents) 
+		for(Document i: super.documents)
 		{
 			if(!docmap.containsKey(i))
 			{
@@ -31,7 +36,7 @@ public class RSVSearcher extends Searcher{
                 System.out.println(i.toString());
 				docid++;
 			}
-			tok = i.getTokens();
+			List<String> tok = i.getTokens();
 			for(String str: tok)
 			{
 				if(!wordbag.containsKey(str))
@@ -41,9 +46,9 @@ public class RSVSearcher extends Searcher{
 				}
 			}
         }
-        
+
 	}
-	
+
 	@Override
 	public List<SearchResult> search(String queryString, int k) {
 		/************* YOUR CODE HERE ******************/
@@ -68,7 +73,7 @@ public class RSVSearcher extends Searcher{
 			docid = docmap.get(doc);
 			d = vecmap.get(docid);
 			q = new double[wordbag.size()];
-			
+
 			for(String str: arr)
 			{
 				if(wordbag.get(str) != null) // word in query is in wordbag
@@ -93,10 +98,10 @@ public class RSVSearcher extends Searcher{
 			else
 				result.add(cos);
 		}
-		
+
 		if(result.size() > 0) // at least k result in the list
 		{
-			Collections.sort(result);		
+			Collections.sort(result);
 			return result.subList(0, k);
 		}
 		else // nan result
