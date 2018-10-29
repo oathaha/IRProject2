@@ -8,8 +8,8 @@ import java.util.Collections;
 public class RSVSearcher extends Searcher{
 
     HashMap<String, Double> IDFmap = new HashMap<>();
-		HashMap<Document,Integer> docmap = new HashMap<>();
-		HashMap<String,Integer> wordbag = new HashMap<>(); // map term and term id
+    HashMap<Document,Integer> docmap = new HashMap<>();
+    HashMap<String,Integer> wordbag = new HashMap<>(); // map term and term id
     HashMap<Integer,double[]> vecmap = new HashMap<>();
     Comparator<SearchResult> docIDComparator = new Comparator<SearchResult>() {
 		@Override
